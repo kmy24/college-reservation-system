@@ -1,10 +1,8 @@
 
-const facilities = [
-  "Discussion Room A",
-  "Multipurpose Room",
-  "Badminton Court 1",
-  "Basketball Court"
-];
+const API_URL = "https://script.google.com/macros/s/AKfycbw2y2Dxe80jOfsS5DyocQ1codzgpxNh7UAVSs33TtXpqI8DPDB1IWNIqbjgw889hMh2DA/exec";
+
+let facilities = [];
+let bookings = [];
 
 const timeSlots = [
   { start: "09:00", end: "11:00" },
@@ -21,6 +19,8 @@ const bookingForm = document.getElementById("bookingForm");
 const schedule = document.getElementById("schedule");
 const bookingMessage = document.getElementById("bookingMessage");
 
+// ---------- DATE AND TIME ----------
+
 function localDateString(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -28,39 +28,6 @@ function localDateString(date = new Date()) {
 
   return `${year}-${month}-${day}`;
 }
-
-const today = localDateString();
-
-filterDate.value = today;
-bookingDate.value = today;
-filterDate.min = today;
-bookingDate.min = today;
-
-// Demonstration data only. These records are not real bookings.
-let bookings = [
-  {
-    id: 1,
-    facility: "Discussion Room A",
-    date: today,
-    start: "10:00",
-    end: "11:30",
-    name: "Demo Student A",
-    purpose: "Group discussion",
-    pic: "Demo PIC A",
-    status: "confirmed"
-  },
-  {
-    id: 2,
-    facility: "Badminton Court 1",
-    date: today,
-    start: "14:00",
-    end: "16:00",
-    name: "Demo Student B",
-    purpose: "Sports activity",
-    pic: "Demo PIC B",
-    status: "confirmed"
-  }
-];
 
 function formatTime(time) {
   const [hours, minutes] = time.split(":").map(Number);
@@ -75,24 +42,16 @@ function formatDate(dateString) {
 
   return new Date(year, month - 1, day).toLocaleDateString(
     "en-MY",
-    { weekday: "long", day: "numeric", month: "long", year: "numeric" }
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
   );
 }
 
-// Two bookings overlap when each starts before the other one ends.
-// Back-to-back reservations are allowed.
-function overlaps(startA, endA, startB, endB) {
-  return startA < endB && startB < endA;
-}
-
-function getConflict(facility, date, start, end) {
-  return bookings.find(booking =>
-    booking.facility === facility &&
-    booking.date === date &&
-    booking.status === "confirmed" &&
-    overlaps(start, end, booking.start, booking.end)
-  );
-}
+// ---------- MESSAGES ----------
 
 function showMessage(message, type) {
   bookingMessage.textContent = message;
@@ -105,74 +64,201 @@ function hideMessage() {
   bookingMessage.textContent = "";
 }
 
+// ---------- BACKEND CONNECTION ----------
+
+async function loadBackendData() {
+  try {
+    showMessage("Loading facilities and bookings...", "success");
+
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error(`Server returned status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "Backend request failed.");
+    }
+
+    facilities = (data.facilities || [])
+      .filter(item => item.active)
+      .map(item => ({
+        id: String(item.facilityId),
+        name: item.facilityName,
+        type: item.type,
+        location: item.location,
+        pic: item.picName || "the facility PIC",
+        picContact: item.picContact || "",
+        active: item.active
+      }));
+
+    bookings = (data.bookings || []).map(item => {
+      const facility = facilities.find(
+        f => f.id === String(item.facilityId)
+      );
+
+      return {
+        id: item.bookingId,
+        facilityId: String(item.facilityId),
+        facility: facility ? facility.name : item.facilityId,
+        date: String(item.bookingDate).slice(0, 10),
+        start: String(item.startTime).slice(0, 5),
+        end: String(item.endTime).slice(0, 5),
+        name: item.bookerName || "",
+        purpose: item.purpose || "",
+        pic: facility ? facility.pic : "the facility PIC",
+        picContact: facility ? facility.picContact : "",
+        status: String(item.status || "").toLowerCase()
+      };
+    });
+
+    populateFacilityOptions();
+    renderSchedule();
+    hideMessage();
+
+    console.log("Backend data loaded:", data);
+  } catch (error) {
+    console.error("Backend connection failed:", error);
+
+    showMessage(
+      "Unable to load college reservation data. Check your connection and backend URL, then try refreshing.",
+      "error"
+    );
+  }
+}
+
+// ---------- FACILITY DROPDOWNS ----------
+
+function populateFacilityOptions() {
+  facilityInput.replaceChildren();
+  filterFacility.replaceChildren();
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select a facility";
+  facilityInput.appendChild(placeholder);
+
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All facilities";
+  filterFacility.appendChild(allOption);
+
+  facilities.forEach(facility => {
+    const bookingOption = document.createElement("option");
+    bookingOption.value = facility.name;
+    bookingOption.textContent = facility.name;
+    facilityInput.appendChild(bookingOption);
+
+    const filterOption = document.createElement("option");
+    filterOption.value = facility.name;
+    filterOption.textContent = facility.name;
+    filterFacility.appendChild(filterOption);
+  });
+}
+
+// ---------- CONFLICT DETECTION ----------
+
+// Back-to-back bookings are allowed.
+// Example: 09:00-11:00 and 11:00-12:00 do not overlap.
+function overlaps(startA, endA, startB, endB) {
+  return startA < endB && startB < endA;
+}
+
+function getConflict(facility, date, start, end) {
+  const selectedFacility = facilities.find(
+    item => item.name === facility
+  );
+
+  if (!selectedFacility) return undefined;
+
+  return bookings.find(booking =>
+    booking.facilityId === selectedFacility.id &&
+    booking.date === date &&
+    ["confirmed", "pending"].includes(booking.status) &&
+    overlaps(start, end, booking.start, booking.end)
+  );
+}
+
+// ---------- SCHEDULE DISPLAY ----------
+
 function renderSchedule() {
   const date = filterDate.value;
-  const selectedFacility = filterFacility.value;
+  const selectedFacility = filterFacility.value || "all";
 
   if (!date) {
-    schedule.innerHTML = "<p class='muted'>Please select a date.</p>";
+    schedule.textContent = "Please select a date.";
     return;
   }
 
-  document.getElementById("scheduleTitle").textContent =
-    selectedFacility === "all"
+  const title = document.getElementById("scheduleTitle");
+  const subtitle = document.getElementById("scheduleSubtitle");
+
+  if (title) {
+    title.textContent = selectedFacility === "all"
       ? "Facility schedule"
       : selectedFacility;
+  }
 
-  document.getElementById("scheduleSubtitle").textContent =
-    formatDate(date);
+  if (subtitle) {
+    subtitle.textContent = formatDate(date);
+  }
 
   const facilitiesToShow = selectedFacility === "all"
-    ? facilities
+    ? facilities.map(item => item.name)
     : [selectedFacility];
 
   const rows = [];
 
-  facilitiesToShow.forEach(facility => {
+  facilitiesToShow.forEach(facilityName => {
+    const facility = facilities.find(
+      item => item.name === facilityName
+    );
+
+    if (!facility) return;
+
     timeSlots.forEach(slot => {
       const conflict = getConflict(
-        facility,
+        facilityName,
         date,
         slot.start,
         slot.end
       );
 
-      if (conflict) {
-        rows.push({
-          facility,
-          start: slot.start,
-          end: slot.end,
-          booked: true,
-          details: `PIC: ${conflict.pic}`
-        });
-      } else {
-        rows.push({
-          facility,
-          start: slot.start,
-          end: slot.end,
-          booked: false,
-          details: "Available for reservation"
-        });
-      }
+      rows.push({
+        facility: facilityName,
+        start: slot.start,
+        end: slot.end,
+        booked: Boolean(conflict),
+        details: conflict
+          ? `Reserved. Contact ${conflict.pic}.`
+          : "Available for reservation"
+      });
     });
 
-    // Also display bookings outside the standard demo time slots.
+    // Include reservations outside the standard time slots.
     bookings
-      .filter(b =>
-        b.facility === facility &&
-        b.date === date &&
-        b.status === "confirmed" &&
+      .filter(booking =>
+        booking.facilityId === facility.id &&
+        booking.date === date &&
+        ["confirmed", "pending"].includes(booking.status) &&
         !timeSlots.some(slot =>
-          overlaps(b.start, b.end, slot.start, slot.end)
+          overlaps(
+            booking.start,
+            booking.end,
+            slot.start,
+            slot.end
+          )
         )
       )
-      .forEach(b => {
+      .forEach(booking => {
         rows.push({
-          facility,
-          start: b.start,
-          end: b.end,
+          facility: facilityName,
+          start: booking.start,
+          end: booking.end,
           booked: true,
-          details: `PIC: ${b.pic}`
+          details: `Reserved. Contact ${booking.pic}.`
         });
       });
   });
@@ -183,8 +269,7 @@ function renderSchedule() {
   );
 
   if (rows.length === 0) {
-    schedule.innerHTML =
-      "<p class='muted'>No schedule available for this selection.</p>";
+    schedule.textContent = "No facilities available for this selection.";
     return;
   }
 
@@ -211,13 +296,23 @@ function renderSchedule() {
     details.append(name, description);
 
     const status = document.createElement("span");
-    status.className = `status ${row.booked ? "booked" : "available"}`;
+    status.className =
+      `status ${row.booked ? "booked" : "available"}`;
     status.textContent = row.booked ? "Booked" : "Available";
 
     element.append(time, details, status);
-    schedule.append(element);
+    schedule.appendChild(element);
   });
 }
+
+// ---------- DATE FILTERS AND BUTTONS ----------
+
+const today = localDateString();
+
+filterDate.value = today;
+bookingDate.value = today;
+filterDate.min = today;
+bookingDate.min = today;
 
 filterDate.addEventListener("change", () => {
   bookingDate.value = filterDate.value;
@@ -227,8 +322,7 @@ filterDate.addEventListener("change", () => {
 filterFacility.addEventListener("change", renderSchedule);
 
 document.getElementById("refreshButton").addEventListener("click", () => {
-  renderSchedule();
-  showMessage("Schedule refreshed.", "success");
+  loadBackendData();
 });
 
 facilityInput.addEventListener("change", () => {
@@ -241,6 +335,10 @@ bookingDate.addEventListener("change", () => {
   renderSchedule();
 });
 
+// ---------- BOOKING FORM ----------
+
+// This currently checks conflicts locally only.
+// It does NOT save bookings to Google Sheets yet.
 bookingForm.addEventListener("submit", event => {
   event.preventDefault();
   hideMessage();
@@ -270,42 +368,25 @@ bookingForm.addEventListener("submit", event => {
   const conflict = getConflict(facility, date, start, end);
 
   if (conflict) {
+    const contact = conflict.picContact
+      ? ` (${conflict.picContact})`
+      : "";
+
     showMessage(
-      `Booking conflict: this facility is already booked from ` +
+      `Booking conflict: this facility is already reserved from ` +
       `${formatTime(conflict.start)} to ${formatTime(conflict.end)}. ` +
-      `Please contact ${conflict.pic} or choose another time.`,
+      `Please contact ${conflict.pic}${contact} or choose another time.`,
       "error"
     );
     return;
   }
 
-  bookings.push({
-    id: Date.now(),
-    facility,
-    date,
-    start,
-    end,
-    name,
-    purpose,
-    pic: name,
-    status: "confirmed"
-  });
-
-  filterDate.value = date;
-  filterFacility.value = facility;
-
-  renderSchedule();
-
   showMessage(
-    "Demo booking added successfully! It only exists in this browser session and is not a real confirmed college reservation.",
-    "success"
+    "The availability check passed, but online booking submission is not connected yet. Your reservation has NOT been saved. Please try again after the backend booking feature is implemented.",
+    "error"
   );
-
-  bookingForm.reset();
-  bookingDate.value = date;
-  filterDate.value = date;
-  facilityInput.value = facility;
-  document.getElementById("bookerName").focus();
 });
 
-renderSchedule();
+// ---------- INITIAL LOAD ----------
+
+loadBackendData();
