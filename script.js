@@ -339,53 +339,127 @@ bookingDate.addEventListener("change", () => {
 
 // This currently checks conflicts locally only.
 // It does NOT save bookings to Google Sheets yet.
+
 bookingForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   hideMessage();
 
-  const facility = facilityInput.value;
+  const facilityName = facilityInput.value;
   const date = bookingDate.value;
   const start = document.getElementById("startTime").value;
   const end = document.getElementById("endTime").value;
   const name = document.getElementById("bookerName").value.trim();
+  const contact = document.getElementById("bookerContact").value.trim();
   const purpose = document.getElementById("purpose").value.trim();
 
-  if (!facility || !date || !start || !end || !name || !purpose) {
-    showMessage("Please complete all booking fields.", "error");
+  // Basic validation
+  if (!facilityName || !date || !start || !end || !name || !purpose) {
+    showMessage("Please complete all required fields.", "error");
     return;
   }
 
-  if (date < localDateString()) {
-    showMessage("Please select today or a future date.", "error");
-    return;
-  }
-
-  if (end <= start) {
+  if (start >= end) {
     showMessage("End time must be later than start time.", "error");
     return;
   }
 
-  const conflict = getConflict(facility, date, start, end);
+  // Convert facility name to its ID, e.g. Discussion Room A -> F001
+  const selectedFacility = facilities.find(
+    item => item.name === facilityName
+  );
+
+  if (!selectedFacility) {
+    showMessage("Please select a valid facility.", "error");
+    return;
+  }
+
+  // Check existing bookings in the loaded calendar data
+  const conflict = getConflict(facilityName, date, start, end);
 
   if (conflict) {
-    const contact = conflict.picContact
-      ? ` (${conflict.picContact})`
-      : "";
-
     showMessage(
-      `Booking conflict: this facility is already reserved from ` +
-      `${formatTime(conflict.start)} to ${formatTime(conflict.end)}. ` +
-      `Please contact ${conflict.pic}${contact} or choose another time.`,
+      "This facility is already booked during that time. " +
+      "Please contact the existing booking PIC: " +
+      (conflict.pic || "Contact the college bureau") +
+      (conflict.picContact ? " (" + conflict.picContact + ")" : ""),
       "error"
     );
     return;
   }
 
-  showMessage(
-    "The availability check passed, but online booking submission is not connected yet. Your reservation has NOT been saved. Please try again after the backend booking feature is implemented.",
-    "error"
+  const payload = {
+    facilityId: selectedFacility.id,
+    bookingDate: date,
+    startTime: start,
+    endTime: end,
+    bookerName: name,
+    bookerContact: contact,
+    purpose: purpose
+  };
+
+  const submitButton = bookingForm.querySelector(
+    'button[type="submit"]'
   );
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Submitting...";
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error("The server returned HTTP " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      showMessage(
+        result.message +
+        (result.picName ? " PIC: " + result.picName : "") +
+        (result.picContact ? " (" + result.picContact + ")" : ""),
+        "error"
+      );
+      return;
+    }
+
+    // Show the newly saved booking on its selected date.
+    filterDate.value = date;
+
+    // Reload actual data from Google Sheets.
+    await loadBackendData();
+
+    showMessage(
+      result.message + " Booking ID: " + result.bookingId,
+      "success"
+    );
+
+    bookingForm.reset();
+    bookingDate.value = localDateString();
+    bookingDate.min = localDateString();
+
+  } catch (error) {
+    console.error("Booking submission failed:", error);
+
+    showMessage(
+      "We could not confirm the reservation response. " +
+      "Check the Bookings sheet before submitting again. " +
+      "If necessary, refresh the page and try again later.",
+      "error"
+    );
+
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Check and submit booking";
+  }
 });
+
 
 // ---------- INITIAL LOAD ----------
 
