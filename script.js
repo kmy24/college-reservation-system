@@ -339,7 +339,7 @@ bookingDate.addEventListener("change", () => {
 
 // This currently checks conflicts locally only.
 // It does NOT save bookings to Google Sheets yet.
-bookingForm.addEventListener("submit", event => {
+bookingForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   hideMessage();
 
