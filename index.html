@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CollegeReserve | Facility Booking</title>
+  <meta name="description" content="View facility availability and manage residential college room and court reservations.">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">CR</span>
+      <span>CollegeReserve<small>RESIDENTIAL COLLEGE</small></span>
+    </a>
+    <nav>
+      <a class="active" href="#dashboard">Dashboard</a>
+      <a href="#calendar">Availability</a>
+      <a href="#booking">Make a Booking</a>
+    </nav>
+  </header>
+
+  <main class="container" id="dashboard">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">RESIDENTIAL COLLEGE FACILITIES</p>
+        <h1>Reserve your space.</h1>
+        <p class="hero-description">
+          Check availability, find a suitable time and make your
+          room or court reservation in one place.
+        </p>
+        <a class="primary-button hero-button" href="#booking">Make a reservation →</a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-circle"></div>
+        <div class="art-card">
+          <span class="art-check">✓</span>
+          <strong>Plan your next activity</strong>
+          <span>Check the schedule before you book.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="calendar">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PLAN AHEAD</p>
+          <h2>Facility availability</h2>
+          <p class="muted">Choose a date and facility to view reservations.</p>
+        </div>
+        <span class="demo-label">DEMO VERSION</span>
+      </div>
+
+      <div class="filters">
+        <label>
+          Select date
+          <input type="date" id="filterDate">
+        </label>
+        <label>
+          Facility
+          <select id="filterFacility">
+            <option value="all">All facilities</option>
+            <option value="Discussion Room A">Discussion Room A</option>
+            <option value="Multipurpose Room">Multipurpose Room</option>
+            <option value="Badminton Court 1">Badminton Court 1</option>
+            <option value="Basketball Court">Basketball Court</option>
+          </select>
+        </label>
+        <button class="secondary-button" id="refreshButton" type="button">
+          Refresh view
+        </button>
+      </div>
+
+      <div class="calendar-card">
+        <div class="calendar-title">
+          <div>
+            <h3 id="scheduleTitle">Today's schedule</h3>
+            <p class="muted" id="scheduleSubtitle">Loading reservations...</p>
+          </div>
+          <div class="legend">
+            <span><i class="dot booked"></i>Booked</span>
+            <span><i class="dot available"></i>Available</span>
+          </div>
+        </div>
+
+        <div id="schedule" class="schedule">
+          <p class="muted">Loading schedule...</p>
+        </div>
+      </div>
+      <p class="notice">
+        <strong>Prototype:</strong> The sample schedule is stored only in
+        this browser session. It is not connected to the college's actual
+        reservations.
+      </p>
+    </section>
+
+    <section class="section booking-section" id="booking">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">NEW RESERVATION</p>
+          <h2>Book a facility</h2>
+          <p class="muted">Complete the details to check the selected time slot.</p>
+        </div>
+      </div>
+
+      <div class="booking-layout">
+        <form id="bookingForm" class="form-card">
+          <div class="form-grid">
+            <label class="full-width">
+              Facility
+              <select id="facility" required>
+                <option value="">Choose a facility</option>
+                <option value="Discussion Room A">Discussion Room A</option>
+                <option value="Multipurpose Room">Multipurpose Room</option>
+                <option value="Badminton Court 1">Badminton Court 1</option>
+                <option value="Basketball Court">Basketball Court</option>
+              </select>
+            </label>
+
+            <label>
+              Booking date
+              <input type="date" id="bookingDate" required>
+            </label>
+
+            <label>
+              Your name
+              <input type="text" id="bookerName" placeholder="Enter your name" required maxlength="100">
+            </label>
+
+            <label>
+              Start time
+              <input type="time" id="startTime" required>
+            </label>
+
+            <label>
+              End time
+              <input type="time" id="endTime" required>
+            </label>
+
+            <label class="full-width">
+              Purpose of booking
+              <input type="text" id="purpose" placeholder="e.g. Club meeting or sports activity" required maxlength="200">
+            </label>
+          </div>
+
+          <button type="submit" class="primary-button submit-button">
+            Check and submit booking
+          </button>
+          <p class="form-footnote">
+            Demo only: submitting will not notify the college bureau.
+          </p>
+        </form>
+
+        <aside class="help-card">
+          <div class="help-icon">i</div>
+          <h3>Before you book</h3>
+          <ul>
+            <li>Check the schedule for your selected date.</li>
+            <li>Choose the correct room or court.</li>
+            <li>Ensure the end time is later than the start time.</li>
+            <li>If a slot is occupied, contact the existing booking PIC.</li>
+          </ul>
+          <div class="help-footer">
+            <strong>Need assistance?</strong>
+            <p>Contact your residential college bureau for booking enquiries.</p>
+          </div>
+        </aside>
+      </div>
+
+      <div id="bookingMessage" class="message" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <footer>
+      <span>CollegeReserve · Residential College Facility Booking</span>
+      <span>Student project prototype</span>
+    </footer>
+  </main>
+</body>
+</html>
