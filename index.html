@@ -4,17 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CollegeReserve | Facility Booking</title>
-  <meta name="description" content="View facility availability and manage residential college room and court reservations.">
+
+  <title>TazBooked | KK10 Residential College</title>
+  <meta
+    name="description"
+    content="TazBooked - KK10 Residential College facility booking system for rooms and courts."
+  >
+
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
+  <!-- Header -->
   <header class="topbar">
-    <a class="brand" href="#">
-      <span class="brand-icon">CR</span>
-      <span>CollegeReserve<small>RESIDENTIAL COLLEGE</small></span>
+    <a class="brand" href="#dashboard">
+      <span class="brand-icon">TB</span>
+      <span>
+        TazBooked
+        <small>KK10 RESIDENTIAL COLLEGE</small>
+      </span>
     </a>
+
     <nav>
       <a class="active" href="#dashboard">Dashboard</a>
       <a href="#calendar">Availability</a>
@@ -23,18 +34,26 @@
   </header>
 
   <main class="container" id="dashboard">
+
+    <!-- Hero -->
     <section class="hero">
       <div>
-        <p class="eyebrow">RESIDENTIAL COLLEGE FACILITIES</p>
+        <p class="eyebrow">KK10 RESIDENTIAL COLLEGE FACILITIES</p>
         <h1>Reserve your space.</h1>
+
         <p class="hero-description">
           Check availability, find a suitable time and make your
           room or court reservation in one place.
         </p>
-        <a class="primary-button hero-button" href="#booking">Make a reservation →</a>
+
+        <a class="primary-button hero-button" href="#booking">
+          Make a reservation →
+        </a>
       </div>
+
       <div class="hero-art" aria-hidden="true">
         <div class="art-circle"></div>
+
         <div class="art-card">
           <span class="art-check">✓</span>
           <strong>Plan your next activity</strong>
@@ -43,13 +62,17 @@
       </div>
     </section>
 
+    <!-- Availability -->
     <section class="section" id="calendar">
       <div class="section-heading">
         <div>
           <p class="eyebrow">PLAN AHEAD</p>
           <h2>Facility availability</h2>
-          <p class="muted">Choose a date and facility to view reservations.</p>
+          <p class="muted">
+            Choose a date and facility to view reservations.
+          </p>
         </div>
+
         <span class="demo-label">DEMO VERSION</span>
       </div>
 
@@ -58,6 +81,7 @@
           Select date
           <input type="date" id="filterDate">
         </label>
+
         <label>
           Facility
           <select id="filterFacility">
@@ -68,7 +92,12 @@
             <option value="Basketball Court">Basketball Court</option>
           </select>
         </label>
-        <button class="secondary-button" id="refreshButton" type="button">
+
+        <button
+          class="secondary-button"
+          id="refreshButton"
+          type="button"
+        >
           Refresh view
         </button>
       </div>
@@ -77,37 +106,70 @@
         <div class="calendar-title">
           <div>
             <h3 id="scheduleTitle">Today's schedule</h3>
-            <p class="muted" id="scheduleSubtitle">Loading reservations...</p>
+            <p class="muted" id="scheduleSubtitle">
+              Loading reservations...
+            </p>
           </div>
+
           <div class="legend">
             <span><i class="dot booked"></i>Booked</span>
             <span><i class="dot available"></i>Available</span>
           </div>
         </div>
 
+        <!-- Morning, Evening and Night schedule -->
         <div id="schedule" class="schedule">
-          <p class="muted">Loading schedule...</p>
+
+          <section class="schedule-period" id="morningSchedule">
+            <h3 class="period-heading">☀️ Morning</h3>
+            <p class="muted">7:00 AM – 12:00 PM</p>
+            <div id="scheduleMorning">
+              <p class="muted">Loading morning availability...</p>
+            </div>
+          </section>
+
+          <section class="schedule-period" id="eveningSchedule">
+            <h3 class="period-heading">🌇 Evening</h3>
+            <p class="muted">12:00 PM – 6:00 PM</p>
+            <div id="scheduleEvening">
+              <p class="muted">Loading evening availability...</p>
+            </div>
+          </section>
+
+          <section class="schedule-period" id="nightSchedule">
+            <h3 class="period-heading">🌙 Night</h3>
+            <p class="muted">6:00 PM – 11:00 PM</p>
+            <div id="scheduleNight">
+              <p class="muted">Loading night availability...</p>
+            </div>
+          </section>
+
         </div>
       </div>
+
       <p class="notice">
-        <strong>Prototype:</strong> The sample schedule is stored only in
-        this browser session. It is not connected to the college's actual
-        reservations.
+        <strong>Note:</strong> Reservations are subject to facility
+        operating hours and approval requirements.
       </p>
     </section>
 
+    <!-- Booking form -->
     <section class="section booking-section" id="booking">
       <div class="section-heading">
         <div>
           <p class="eyebrow">NEW RESERVATION</p>
           <h2>Book a facility</h2>
-          <p class="muted">Complete the details to check the selected time slot.</p>
+          <p class="muted">
+            Complete the details to check the selected time slot.
+          </p>
         </div>
       </div>
 
       <div class="booking-layout">
+
         <form id="bookingForm" class="form-card">
           <div class="form-grid">
+
             <label class="full-width">
               Facility
               <select id="facility" required>
@@ -126,21 +188,25 @@
 
             <label>
               Your name
-              <input type="text" id="bookerName" placeholder="Enter your name" required maxlength="100">
+              <input
+                type="text"
+                id="bookerName"
+                placeholder="e.g. ALI BIN ABU"
+                required
+                maxlength="100"
+              >
             </label>
 
-            
-<label>
-  Contact number
-  <input
-    type="tel"
-    id="bookerContact"
-    placeholder="e.g. 0123456789"
-    maxlength="20"
-  >
-</label>
+            <label>
+              Contact number
+              <input
+                type="tel"
+                id="bookerContact"
+                placeholder="e.g. 0123456789"
+                maxlength="20"
+              >
+            </label>
 
-            
             <label>
               Start time
               <input type="time" id="startTime" required>
@@ -153,41 +219,83 @@
 
             <label class="full-width">
               Purpose of booking
-              <input type="text" id="purpose" placeholder="e.g. Club meeting or sports activity" required maxlength="200">
+              <input
+                type="text"
+                id="purpose"
+                placeholder="e.g. Club meeting or sports activity"
+                required
+                maxlength="200"
+              >
             </label>
+
           </div>
 
-          <button type="submit" class="primary-button submit-button">
+          <button
+            type="submit"
+            class="primary-button submit-button"
+          >
             Check and submit booking
           </button>
+
           <p class="form-footnote">
             Reservations are submitted as pending and may require approval.
           </p>
         </form>
 
+        <!-- Assistance -->
         <aside class="help-card">
           <div class="help-icon">i</div>
+
           <h3>Before you book</h3>
+
           <ul>
             <li>Check the schedule for your selected date.</li>
             <li>Choose the correct room or court.</li>
             <li>Ensure the end time is later than the start time.</li>
             <li>If a slot is occupied, contact the existing booking PIC.</li>
           </ul>
+
           <div class="help-footer">
             <strong>Need assistance?</strong>
-            <p>Contact your residential college bureau for booking enquiries.</p>
+
+            <p>
+              <span aria-hidden="true">👤</span>
+              Hakimie
+            </p>
+
+            <p>
+              <span aria-hidden="true">💬</span>
+              <a
+                href="https://wa.me/kmy24_"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Contact via WhatsApp
+              </a>
+            </p>
           </div>
         </aside>
+
       </div>
 
-      <div id="bookingMessage" class="message" role="status" aria-live="polite" hidden></div>
+      <div
+        id="bookingMessage"
+        class="message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></div>
     </section>
 
+    <!-- Footer -->
     <footer>
-      <span>CollegeReserve · Residential College Facility Booking</span>
-      <span>Student project prototype</span>
+      <span>
+        TazBooked : KK10 Residential College Facility Booking
+      </span>
+
+      <span>© HakimieAbdKadir</span>
     </footer>
+
   </main>
 </body>
 </html>
