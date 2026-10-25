@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>TazBooked | KK10 Residential College</title>
-  <meta name="description" content="TazBooked - KK10 Residential College facility booking system for rooms or courts.">
+  <meta name="description" content="TazBooked - KK10 Residential College facility booking system for rooms and sports courts.">
 
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 
 <body>
+
   <!-- Header -->
   <header class="topbar">
     <a class="brand" href="#dashboard">
@@ -27,20 +28,25 @@
       <a class="active" href="#dashboard">Dashboard</a>
       <a href="#calendar">Availability</a>
       <a href="#booking">Make a Booking</a>
+      <a href="#rules">Rules &amp; Regulations</a>
     </nav>
   </header>
 
   <main class="container" id="dashboard">
 
-    <!-- Hero -->
+    <!-- Dashboard Hero -->
     <section class="hero">
       <div>
         <p class="eyebrow">KK10 RESIDENTIAL COLLEGE FACILITIES</p>
-        <h1>Reserve your space.</h1>
+
+        <h1>Book your space. Use it responsibly.</h1>
+
         <p class="hero-description">
-          Check availability, find a suitable time and make your
-          room reservation in one place.
+          Welcome to TazBooked, the facility booking platform for
+          Kolej Kediaman Tun Ahmad Zaidi (KK10). Check availability
+          and reserve rooms or sports courts conveniently in one place.
         </p>
+
         <a class="primary-button hero-button" href="#booking">
           Make a reservation →
         </a>
@@ -48,10 +54,11 @@
 
       <div class="hero-art" aria-hidden="true">
         <div class="art-circle"></div>
+
         <div class="art-card">
           <span class="art-check">✓</span>
           <strong>Plan your next activity</strong>
-          <span>Check the schedule before you book.</span>
+          <span>Check availability before making a reservation.</span>
         </div>
       </div>
     </section>
@@ -62,11 +69,16 @@
         <div>
           <p class="eyebrow">PLAN AHEAD</p>
           <h2>Facility availability</h2>
-          <p class="muted">Choose a date and facility to view reservations.</p>
+
+          <p class="muted">
+            Select a date and facility to check existing reservations
+            before submitting your booking.
+          </p>
         </div>
       </div>
 
       <div class="filters">
+
         <label>
           Select date
           <input type="date" id="filterDate">
@@ -83,52 +95,78 @@
           </select>
         </label>
 
-        <button class="secondary-button" id="refreshButton" type="button">
+        <button
+          class="secondary-button"
+          id="refreshButton"
+          type="button"
+        >
           Refresh view
         </button>
+
       </div>
 
       <div class="calendar-card">
         <div class="calendar-title">
+
           <div>
             <h3 id="scheduleTitle">Today's schedule</h3>
-            <p class="muted" id="scheduleSubtitle">Loading reservations...</p>
+            <p class="muted" id="scheduleSubtitle">
+              Loading reservations...
+            </p>
           </div>
 
           <div class="legend">
-            <span><i class="dot booked"></i>Booked</span>
-            <span><i class="dot available"></i>Available</span>
+            <span>
+              <i class="dot booked"></i>
+              Booked
+            </span>
+
+            <span>
+              <i class="dot available"></i>
+              Available
+            </span>
           </div>
+
         </div>
 
-        <!-- Original single schedule layout -->
+        <!-- Keep the original single schedule layout -->
         <div id="schedule" class="schedule">
           <p class="muted">Loading schedule...</p>
         </div>
       </div>
 
       <p class="notice">
-        <strong>Note:</strong> Reservations are subject to facility
-        operating hours and approval requirements.
+        <strong>Important:</strong>
+        Always check the selected date and facility before booking.
+        If a reservation overlaps with another student's reservation,
+        contact the person in charge (PIC) for confirmation.
       </p>
     </section>
 
-    <!-- Booking form -->
+    <!-- Booking Form -->
     <section class="section booking-section" id="booking">
+
       <div class="section-heading">
         <div>
           <p class="eyebrow">NEW RESERVATION</p>
           <h2>Book a facility</h2>
-          <p class="muted">Complete the details to check the selected time slot.</p>
+
+          <p class="muted">
+            Complete the required details carefully before submitting
+            your reservation.
+          </p>
         </div>
       </div>
 
       <div class="booking-layout">
+
         <form id="bookingForm" class="form-card">
+
           <div class="form-grid">
 
             <label class="full-width">
               Facility
+
               <select id="facility" required>
                 <option value="">Choose a facility</option>
                 <option value="Discussion Room A">Discussion Room A</option>
@@ -145,6 +183,7 @@
 
             <label>
               Your name
+
               <input
                 type="text"
                 id="bookerName"
@@ -156,6 +195,7 @@
 
             <label>
               Contact number
+
               <input
                 type="tel"
                 id="bookerContact"
@@ -176,6 +216,7 @@
 
             <label class="full-width">
               Purpose of booking
+
               <input
                 type="text"
                 id="purpose"
@@ -192,44 +233,55 @@
           </button>
 
           <p class="form-footnote">
-            Reservations are submitted as pending and may require approval.
+            After submitting, keep your Booking ID for reference.
+            Room applicants must contact the PIC on duty to arrange
+            key collection. Court users may proceed based on their
+            reservation and should contact the PIC if a booking
+            conflict occurs.
           </p>
+
         </form>
 
-        <!-- Before you book -->
+        <!-- Before You Book -->
         <aside class="help-card">
+
           <div class="help-icon">i</div>
+
           <h3>Before you book</h3>
 
           <ul>
-            <li>Check the schedule for your selected date.</li>
-            <li>Choose the correct room or court.</li>
+            <li>Check availability for your selected date.</li>
+            <li>Choose the correct room or sports court.</li>
             <li>Ensure the end time is later than the start time.</li>
-            <li>If a slot is occupied, contact the existing booking PIC.</li>
+            <li>Enter accurate booking information.</li>
+            <li>Keep your Booking ID after submitting.</li>
+            <li>Contact the PIC on duty if you need to cancel.</li>
           </ul>
 
           <div class="help-footer">
+
             <strong>Need assistance?</strong>
 
-            
-<p>
-  <span aria-hidden="true">👤</span>
-  HAKIMIE
-</p>
+            <p>
+              <span aria-hidden="true">👤</span>
+              HAKIMIE
+            </p>
 
-<a
-  class="whatsapp-link"
-  href="https://wa.me/kmy24_"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <span aria-hidden="true">💬</span>
-  Contact via WhatsApp
-  <span aria-hidden="true">↗</span>
-</a>
+            <a
+              class="whatsapp-link"
+              href="https://wa.me/kmy24_"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span aria-hidden="true">💬</span>
+              Contact via WhatsApp
+              <span aria-hidden="true">↗</span>
+            </a>
 
           </div>
+
         </aside>
+
       </div>
 
       <div
@@ -239,6 +291,121 @@
         aria-live="polite"
         hidden
       ></div>
+
+    </section>
+
+    <!-- Rules and Regulations -->
+    <section class="section" id="rules">
+
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PLEASE READ BEFORE USE</p>
+          <h2>Rules &amp; Regulations</h2>
+
+          <p class="muted">
+            All students must follow these rules when booking and
+            using KK10 facilities.
+          </p>
+        </div>
+      </div>
+
+      <div class="booking-layout">
+
+        <!-- Room Rules -->
+        <article class="help-card">
+
+          <h3>🏢 Room Reservations</h3>
+
+          <ul>
+            <li>
+              Applicants must inform the PIC on duty to arrange
+              key collection.
+            </li>
+
+            <li>
+              Keep your Booking ID as a reservation reference.
+            </li>
+
+            <li>
+              Keys must be returned after use.
+            </li>
+
+            <li>
+              Applicants are responsible for any damage, loss,
+              or incidents occurring during the borrowing and
+              usage period.
+            </li>
+
+            <li>
+              Ensure the room is clean after use.
+            </li>
+
+          </ul>
+
+        </article>
+
+        <!-- Court Rules -->
+        <article class="help-card">
+
+          <h3>🏸 Court Reservations</h3>
+
+          <ul>
+            <li>
+              Keep your Booking ID as a reservation reference.
+            </li>
+
+            <li>
+              Students may proceed to use the court based on
+              their reservation.
+            </li>
+
+            <li>
+              In the event of overlapping reservations,
+              please refer to the PIC for confirmation.
+            </li>
+
+          </ul>
+
+        </article>
+
+      </div>
+
+      <!-- General Reminders -->
+      <article class="help-card" style="margin-top: 20px;">
+
+        <h3>⚠️ General Reminders</h3>
+
+        <ul>
+          <li>
+            Ensure all reservation details are accurate
+            before submission.
+          </li>
+
+          <li>
+            Follow the reserved date and time.
+          </li>
+
+          <li>
+            If you wish to cancel a reservation, please contact
+            the PIC on duty.
+          </li>
+
+          <li>
+            Using any facility, whether a room or court,
+            without a reservation is prohibited.
+            Further action will be taken by the KK10 management.
+          </li>
+
+        </ul>
+
+        <p>
+          Your cooperation is greatly appreciated in ensuring
+          the proper and smooth use of KK10 facilities.
+          Thank you! 🤝
+        </p>
+
+      </article>
+
     </section>
 
     <!-- Footer -->
@@ -248,5 +415,7 @@
     </footer>
 
   </main>
+
 </body>
 </html>
+```
