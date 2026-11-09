@@ -1,225 +1,232 @@
-# TazBooked — KK10 Residential College Facility Booking System
+# TazBooked — KK10 Residential College Room Booking System
 
-**TazBooked** is a web-based facility booking system developed for **Kolej Kediaman Tun Ahmad Zaidi (KK10), Universiti Malaya**. It provides students with a convenient way to check facility availability and submit reservations for college rooms and sports courts.
+**TazBooked** is a web-based room booking system developed for **Kolej Kediaman Tun Ahmad Zaidi (KK10), Universiti Malaya**. Students can check room availability hour by hour, submit a reservation, and receive an email when the person in charge (PIC) approves it.
 
-The system aims to improve the existing booking process by reducing scheduling conflicts, simplifying reservation management, and making facility availability easier to access.
+The system reduces scheduling conflicts, simplifies reservation management, and keeps all records in Google Sheets.
+
+> A full step-by-step **User Guide** (for students and for the PIC/administrator) is available as a Google Doc: *TazBooked User Guide*. Add its share link here: `[User Guide](PASTE-LINK-HERE)`
 
 ## 🎯 Project Objectives
 
-- Provide students with an accessible online facility booking platform.
-- Display facility availability based on the selected date and time.
-- Prevent overlapping reservations for the same facility.
-- Centralise facility and booking records using Google Sheets.
-- Simplify the reservation process for students and the college management.
-- Reduce the need for manual availability checking.
+- Provide students with an accessible online room booking platform.
+- Show availability for any selected day in a clear hourly table.
+- Prevent overlapping reservations for the same room.
+- Collect complete applicant and project details for each booking.
+- Let the PIC approve bookings from Google Sheets and notify applicants automatically by email.
+- Centralise facility and booking records in Google Sheets.
 
 ## ✨ Features
 
-### 1. Facility Availability Calendar
-- View facility availability by date.
-- Check available and booked time slots.
-- Filter the schedule by facility.
-- View reservation time slots throughout the day.
+### 1. Dashboard and Rules
+- Short, focused dashboard with a direct link to the booking form.
+- Rules & Regulations for room reservations and general reminders, including what to do when there is a clash that is urgent or important (contact the PIC in charge).
 
-### 2. Online Facility Booking
-- Select a facility, date, start time, and end time.
-- Enter the booker's name, contact information, and booking purpose.
-- Submit a reservation through the website.
-- Receive a confirmation pop-up after a successful submission.
+### 2. Facility Availability (hourly table)
+- Table view with one row per hour (7–8 AM, 8–9 AM, and so on) and one column per facility.
+- Booked cells show the JKP/club name and booked time; Pending bookings are labelled.
+- Filter by date and by facility.
+- **Day navigator:** a 7-day strip showing "Free" or the number of bookings for each day, with previous/next day buttons and a Today button, so users can view availability on other days.
+- Hours outside the standard 7 AM – 11 PM range appear automatically if a booking falls there.
 
-### 3. Booking Conflict Detection
-- Check for overlapping reservations before submitting a booking.
-- Prevent conflicting reservations for the same facility.
-- Allow back-to-back bookings when their time periods do not overlap.
-- Inform users when a selected time slot is unavailable.
+### 3. Online Booking Form
+All fields are required and labelled in capital letters:
 
-### 4. Booking Reference
-- Display the Booking ID when it is returned by the backend.
-- Allow users to copy their Booking ID.
-- Encourage students to keep their Booking ID for future reference.
+| Field | Description |
+|---|---|
+| NAME | Applicant's full name |
+| MATRIC NO. | Applicant's matric number |
+| TELEPHONE NO. | Contact number |
+| EMAIL | Where the approval email is sent |
+| JKP/CLUB NAME | Committee or club using the room |
+| PROJECT/PROGRAMME | Name of the project or programme |
+| POSITION OF APPLICANT IN THE PROJECT | Applicant's role |
+| PURPOSE OF RESERVATION | Reason for the booking |
+| START DATE / END DATE | Supports single-day and multi-day bookings |
+| START TIME / END TIME | Daily time window (applies to each day in the range) |
+| FACILITY | Room to be booked |
 
-### 5. Centralised Data Management
-- Store facility information and booking records in Google Sheets.
-- Retrieve facility and reservation data through Google Apps Script.
-- Refresh the website to retrieve the latest available data.
+### 4. Conflict Detection
+- **Live check** under the form tells the user if the chosen time clashes, and the chosen time is outlined in the availability table (red with "CLASH" if it overlaps).
+- The front end checks for overlaps before submitting, and the backend checks again when saving (with a script lock to prevent two simultaneous bookings).
+- Date ranges and time ranges are both compared; back-to-back bookings (e.g. 9–11 and 11–12) are allowed.
+- `Pending` and `Approved` bookings block the time; `Rejected` and `Cancelled` free it.
 
-### 6. User-Friendly Interface
-- Responsive web interface for convenient access.
-- Clear booking status and availability indicators.
-- Pop-up messages for successful submissions, unavailable time slots, and errors.
-- Contact information to help students reach the person in charge (PIC).
+### 5. Booking Reference and Pop-ups
+- Success, clash, and error pop-ups.
+- Booking ID shown with a **Copy Booking ID** button.
+
+### 6. Approval Status and Email Notification
+- New bookings are saved with the status **Pending**.
+- The PIC changes the **STATUS** dropdown in Google Sheets (Pending, Approved, Rejected, Cancelled).
+- When set to **Approved**, an email is sent automatically to the applicant containing the Booking ID, status, facility, date, time, applicant and project details, reminders, and the PIC's contact.
+- Column **EMAIL SENT** records `SENT` with a timestamp (or `FAILED` with the reason). Each booking is emailed once; a failed email can be retried by setting the status to Approved again.
+
+### 7. PIC Information (easy to change)
+- The *Before you book* panel shows the PIC in charge. Change the name, phone number, and WhatsApp number in the `PIC_INFO` block at the top of `script.js`.
+
+### 8. Privacy
+- Matric number, telephone number, and email are stored in the sheet but are **not** sent to the public website. The public page only receives non-sensitive booking details (club name, project, purpose, times, status).
 
 ## 🛠️ Technologies Used
 
 | Technology | Purpose |
 |---|---|
-| HTML5 | Structures the website content. |
-| CSS3 | Styles the website and provides a responsive layout. |
-| JavaScript | Handles booking forms, availability display, validation, and pop-ups. |
-| Google Apps Script | Connects the frontend to the booking data and processes reservation requests. |
-| Google Sheets | Stores facility details and booking records. |
-| GitHub | Hosts the source code and supports version control. |
-| GitHub Pages | Deploys the website for online access. |
+| HTML5 | Page structure |
+| CSS3 | Responsive styling, availability table, day navigator |
+| JavaScript | Form validation, hourly table, live clash check, pop-ups |
+| Google Apps Script | Backend API, conflict checking, status dropdown, approval emails |
+| Google Sheets | Stores facilities and bookings |
+| Gmail (MailApp) | Sends approval emails |
+| GitHub / GitHub Pages | Source control and hosting |
 
 ## ⚙️ System Architecture
 
-TazBooked uses a lightweight web architecture that connects the frontend to an online backend and data store.
-
 ```text
-                 STUDENT
-                    |
-                    v
+                 STUDENT                         PIC / ADMIN
+                    |                                 |
+                    v                                 v
+          +--------------------+            +--------------------+
+          |  TazBooked Website |            |    Google Sheets   |
+          |    HTML, CSS, JS   |            |  (set STATUS cell) |
+          +--------------------+            +--------------------+
+                    |                                 |
+                    v                                 | edit trigger
+          +--------------------+                      v
+          | Google Apps Script | <--------------------+
+          |  doGet / doPost    |
+          |  onBookingStatusEdit
           +--------------------+
-          |  TazBooked Website |
-          |    HTML, CSS, JS   |
-          +--------------------+
-                    |
-                    v
-          +--------------------+
-          | Google Apps Script |
-          |       Backend      |
-          +--------------------+
-                    |
-                    v
-          +--------------------+
-          |    Google Sheets   |
-          |                    |
-          |    - Facilities    |
-          |    - Bookings      |
-          +--------------------+
+              |            |
+              v            v
+   +----------------+   +-----------------------+
+   |  Google Sheets |   | Approval email (Gmail)|
+   | Facilities     |   | sent to the applicant |
+   | Bookings       |   +-----------------------+
+   +----------------+
 ```
 
-**How it works:**
+**How it works**
 
-1. Students open the TazBooked website.
-2. The website retrieves facility information and booking records from the backend.
-3. Students select a facility and preferred time slot.
-4. The system checks availability and validates the reservation request.
-5. Google Apps Script processes the request and checks for booking conflicts.
-6. Valid reservations are saved to Google Sheets.
-7. The website displays the result and refreshes the booking information.
+1. The student opens the website, which loads facilities and bookings from the Apps Script web app.
+2. The student checks the hourly availability table and fills in the booking form.
+3. The website checks for overlaps and shows a live clash message.
+4. On submit, Apps Script validates the request, checks for conflicts again, and saves the booking as **Pending**.
+5. The PIC reviews the booking in Google Sheets and sets the status to **Approved**.
+6. An installable edit trigger sends the approval email to the applicant and marks the row as sent.
 
-## 📋 Booking Workflow
+## 📋 Booking Workflow (student)
 
-1. Open the TazBooked website.
-2. Select the desired date and facility.
-3. Check the availability calendar.
-4. Complete the booking form.
-5. Review the selected date and time.
-6. Submit the reservation.
-7. Check the pop-up message and save the Booking ID when provided.
-8. Follow the relevant KK10 facility booking procedures.
+1. Open the TazBooked website and read the Rules & Regulations.
+2. Choose a date (or use the day strip) and check the availability table.
+3. Complete the booking form; watch the live clash message.
+4. Submit and save the **Booking ID**.
+5. Wait for the approval email.
+6. Contact the PIC on duty to arrange key collection, and return the key and leave the room clean after use.
+7. To cancel, or if there is an urgent clash, contact the PIC in charge.
 
-> **Important:** A successful online submission does not necessarily replace the college's existing procedures. For room reservations, students should contact the PIC or office to arrange key collection and confirm the necessary arrangements. Students should keep their Booking ID and contact the PIC if a scheduling conflict occurs or if they need to cancel a reservation.
-
-## 🏢 Facilities
-
-The system can manage different types of facilities through the `Facilities` sheet.
-
-Examples of facilities configured during development include:
-
-- Discussion Room A
-- Multipurpose Room
-- Badminton Court 1
-- Basketball Court
-
-Facility information includes its ID, name, type, location, person in charge, contact information, and active status.
-
-The facilities displayed on the website depend on the records configured in Google Sheets.
+> **Important:** An online submission is **Pending** until approved. Students should keep their Booking ID and follow the KK10 procedures for key collection.
 
 ## 🗂️ Data Storage
 
-The Google Sheets spreadsheet contains two main worksheets.
+### Facilities sheet
 
-### Facilities
+| Column | Header | Notes |
+|---|---|---|
+| A | FACILITY ID | e.g. `F001` |
+| B | FACILITY NAME | Shown on the website |
+| C | TYPE | e.g. Room |
+| D | LOCATION | |
+| E | PIC NAME | Used in clash messages and emails |
+| F | PIC CONTACT | Used in clash messages and emails |
+| G | ACTIVE | Checkbox (TRUE = shown on the website) |
 
-Stores information about facilities available for reservation.
+The facilities shown on the website depend on the rows marked **Active**.
 
-Typical fields include:
+### Bookings sheet
 
-- `facilityId`
-- `facilityName`
-- `type`
-- `location`
-- `picName`
-- `picContact`
-- `active`
+| Column | Header | Notes |
+|---|---|---|
+| A | BOOKING ID | Generated automatically |
+| B | FACILITY ID | Matches the Facilities sheet |
+| C | START DATE | `yyyy-mm-dd` |
+| D | START TIME | `hh:mm` |
+| E | END TIME | `hh:mm` |
+| F | NAME | |
+| G | TELEPHONE NO. | Private |
+| H | PURPOSE OF RESERVATION | |
+| I | STATUS | Dropdown: Pending, Approved, Rejected, Cancelled |
+| J | CREATED AT | Timestamp |
+| K | END DATE | Empty in old rows = single-day booking |
+| L | MATRIC NO. | Private |
+| M | JKP/CLUB NAME | |
+| N | PROJECT/PROGRAMME | |
+| O | POSITION OF APPLICANT IN THE PROJECT | |
+| P | EMAIL | Approval email recipient |
+| Q | EMAIL SENT | Filled automatically |
 
-### Bookings
-
-Stores submitted reservation records.
-
-Typical fields include:
-
-- `bookingId`
-- `facilityId`
-- `bookingDate`
-- `startTime`
-- `endTime`
-- `bookerName`
-- `bookerContact`
-- `purpose`
-- `status`
-
-The exact column names and structure should match the Google Apps Script implementation.
+Old rows with the status `Confirmed` still block the time slot.
 
 ## 🚀 Deployment
 
-The frontend is deployed using GitHub Pages, while the backend runs as a Google Apps Script web app.
+### Backend — Google Apps Script
+
+1. Create the Google Sheet with the **Facilities** and **Bookings** tabs.
+2. Open **Extensions → Apps Script** and paste in `Code.gs`. Save.
+3. Run **`setupBookingsSheet`** once (writes headers A–Q and adds the STATUS dropdown).
+4. Run **`authorizeEmail`** once and accept the permissions (sends a test email to you).
+5. Run **`createEditTrigger`** once (installs the trigger that sends approval emails).
+6. **Deploy → New deployment → Web app**, execute as *Me*, access *Anyone*. Copy the web app URL.
+7. After any later change to `Code.gs`: **Deploy → Manage deployments → Edit → New version**.
 
 ### Frontend — GitHub Pages
 
-1. Open the `college-reservation-system` repository.
-2. Upload or update the website files, including `index.html`, `style.css`, and `script.js` if these are the filenames used in the repository.
-3. Open the repository's **Settings**.
-4. Navigate to **Pages**.
-5. Configure the deployment source and branch.
-6. Save the settings and wait for GitHub Pages to publish the website.
+1. Put the web app URL into `API_URL` at the top of `script.js`.
+2. Edit `PIC_INFO` in `script.js` with the current PIC details.
+3. Upload `index.html`, `style.css`, and `script.js` to the repository.
+4. In **Settings → Pages**, choose the branch and save. Wait for the site to publish.
 
-### Backend — Google Apps Script
+**Security note:** Do not make the spreadsheet public. It contains matric numbers, telephone numbers, and email addresses. Keep Apps Script and Sheets permissions restricted to the PIC/administrator.
 
-1. Create or open the Google Apps Script project.
-2. Connect the script to the appropriate Google Sheets spreadsheet.
-3. Ensure the backend supports retrieving facility and booking data and processing reservation requests.
-4. Deploy the project as a web app.
-5. Configure the deployment permissions appropriately.
-6. Set the web app endpoint in `script.js` to the deployed Apps Script URL.
+## 👩‍💼 PIC / Administrator Guide (quick version)
 
-**Important:** Do not publish private credentials, sensitive contact information, or unrestricted access to data that should remain confidential. Configure Google Sheets and Apps Script permissions carefully.
+- **Approve a booking:** set STATUS to **Approved** in the Bookings sheet; the applicant is emailed automatically.
+- **Reject or cancel:** set STATUS to **Rejected** or **Cancelled**; the time becomes free. No email is sent.
+- **Email failed:** column Q shows the reason. Fix it (for example add a missing email in column P), set STATUS to Pending, then back to Approved.
+- **Add or hide a room:** add a row in Facilities, or untick **Active**.
+- **Change the PIC on the website:** edit `PIC_INFO` in `script.js`.
+- **Email limits:** about 100 emails/day on a personal Gmail account, about 1,500/day on Google Workspace.
 
 ## 🧪 Testing
 
-The following scenarios can be used to test the booking system:
-
 | Test Case | Expected Result |
 |---|---|
-| Load the website | Facility and booking information are displayed. |
-| Select a facility and date | The schedule reflects the selected filters. |
-| Submit a valid booking | The reservation is saved and a success message is displayed. |
-| Book an already-reserved time slot | The system rejects the overlapping reservation. |
-| Submit a back-to-back booking | The booking is accepted if the time periods do not overlap. |
-| Leave required fields empty | The form displays a validation message. |
-| Backend connection fails | The website displays an error message. |
-| Submit a reservation successfully | The Booking ID is displayed if returned by the backend. |
+| Load the website | Facilities and bookings load; the hourly table is shown |
+| Click a day in the day strip / use ← → / Today | The table updates to that date |
+| Select a facility | The table shows only that facility's column |
+| Submit a valid booking | Success pop-up with Booking ID; row added as Pending |
+| Choose a time that overlaps a booking | Live clash message; table cell outlined red; submission rejected |
+| Back-to-back booking (e.g. 11–12 after 9–11) | Accepted |
+| Multi-day booking | Blocks the time on every day in the range |
+| Leave a field empty / invalid email | Validation message |
+| End date before start date, or end time before start time | Validation message |
+| Set STATUS to Approved | Approval email is sent; column Q shows SENT |
+| Set STATUS to Rejected or Cancelled | The time becomes available again |
+| Backend connection fails | Error message is displayed |
 
 ## 🔮 Future Improvements
 
-Potential improvements include:
-
-- Automated email or WhatsApp notifications for relevant parties.
-- An administrative dashboard for managing reservations.
-- Booking cancellation and modification functionality.
-- More advanced booking status management.
+- Notifications for rejected or cancelled bookings.
+- Booking cancellation and modification from the website.
+- WhatsApp notifications.
 - Booking history for individual students.
-- Improved mobile accessibility.
-- Reports and statistics on facility usage.
+- Reports and statistics on room usage.
 - Stronger authentication and access control.
 
-These are potential future enhancements and may not be implemented in the current version.
+These are potential enhancements and are not part of the current version.
 
 ## 🎓 Project Context
 
-TazBooked is a practical software development project designed to address facility reservation challenges in a residential college environment. It applies web development, backend integration, data management, validation, and user interface design to a real-world campus use case.
+TazBooked is a practical software development project that addresses room reservation challenges in a residential college. It applies web development, backend integration, data management, validation, and user interface design to a real campus use case.
 
 ## 👨‍💻 Author
 
@@ -229,4 +236,4 @@ Developed for **Kolej Kediaman Tun Ahmad Zaidi (KK10), Universiti Malaya**.
 
 ---
 
-*TazBooked — Making KK10 facility reservations simpler and more organised.*
+*TazBooked — Making KK10 room reservations simpler and more organised.*
