@@ -566,6 +566,8 @@ function renderSchedule() {
     return;
   }
 
+  renderDayStrip();
+
   const title = document.getElementById("scheduleTitle");
   const subtitle = document.getElementById("scheduleSubtitle");
 
@@ -708,6 +710,102 @@ function renderSchedule() {
 
   schedule.replaceChildren(wrap);
 }
+
+// ---------- VIEW OTHER DAYS ----------
+
+const dayStrip = document.getElementById("dayStrip");
+const prevDayButton = document.getElementById("prevDay");
+const nextDayButton = document.getElementById("nextDay");
+const todayButton = document.getElementById("todayButton");
+
+let stripStart = localDateString();
+
+function addDays(dateString, n) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  return localDateString(new Date(y, m - 1, d + n));
+}
+
+// Changes the date shown in the schedule (same as using the date picker).
+function setViewDate(dateString) {
+  if (!dateString || dateString < localDateString()) return;
+
+  filterDate.value = dateString;
+  filterDate.dispatchEvent(new Event("change"));
+}
+
+// Shows 7 days. Each day shows how many bookings it has for the chosen facility.
+function renderDayStrip() {
+  const selected = filterDate.value;
+  const today = localDateString();
+
+  if (!selected) return;
+
+  if (selected < stripStart || selected > addDays(stripStart, 6)) {
+    stripStart = selected;
+  }
+
+  const selectedFacility = filterFacility.value || "all";
+  const visibleIds = (
+    selectedFacility === "all"
+      ? facilities
+      : facilities.filter(item => item.name === selectedFacility)
+  ).map(item => item.id);
+
+  dayStrip.replaceChildren();
+
+  for (let i = 0; i < 7; i++) {
+    const day = addDays(stripStart, i);
+
+    const count = bookings.filter(booking =>
+      visibleIds.includes(booking.facilityId) &&
+      ACTIVE_STATUSES.includes(booking.status) &&
+      bookingCoversDate(booking, day)
+    ).length;
+
+    const [y, m, d] = day.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "day-chip" + (day === selected ? " selected" : "");
+    chip.setAttribute("aria-pressed", day === selected ? "true" : "false");
+
+    const weekday = document.createElement("span");
+    weekday.className = "day-chip-weekday";
+    weekday.textContent = day === today
+      ? "Today"
+      : dateObj.toLocaleDateString("en-MY", { weekday: "short" });
+
+    const number = document.createElement("strong");
+    number.textContent = dateObj.toLocaleDateString("en-MY", {
+      day: "numeric",
+      month: "short"
+    });
+
+    const status = document.createElement("span");
+    status.className = "day-chip-status" + (count > 0 ? " has-bookings" : "");
+    status.textContent = count > 0 ? `${count} booked` : "Free";
+
+    chip.append(weekday, number, status);
+    chip.addEventListener("click", () => setViewDate(day));
+    dayStrip.appendChild(chip);
+  }
+
+  prevDayButton.disabled = selected <= today;
+}
+
+prevDayButton.addEventListener("click", () => {
+  setViewDate(addDays(filterDate.value || localDateString(), -1));
+});
+
+nextDayButton.addEventListener("click", () => {
+  setViewDate(addDays(filterDate.value || localDateString(), 1));
+});
+
+todayButton.addEventListener("click", () => {
+  stripStart = localDateString();
+  setViewDate(localDateString());
+});
 
 // ---------- DATE FILTERS AND BUTTONS ----------
 
