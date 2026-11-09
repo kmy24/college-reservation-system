@@ -480,7 +480,7 @@ function overlaps(startA, endA, startB, endB) {
   return startA < endB && startB < endA;
 }
 
-const ACTIVE_STATUSES = ["confirmed", "pending"];
+const ACTIVE_STATUSES = ["approved", "confirmed", "pending"];
 
 // A booking covers the given date if the date is between its start and end date.
 function bookingCoversDate(booking, date) {
@@ -885,6 +885,7 @@ bookingForm.addEventListener("submit", async (event) => {
   const name = document.getElementById("bookerName").value.trim();
   const matricNo = document.getElementById("matricNo").value.trim();
   const contact = document.getElementById("bookerContact").value.trim();
+  const email = document.getElementById("bookerEmail").value.trim();
   const clubName = document.getElementById("clubName").value.trim();
   const projectName = document.getElementById("projectName").value.trim();
   const position = document.getElementById("position").value.trim();
@@ -893,10 +894,15 @@ bookingForm.addEventListener("submit", async (event) => {
   // Basic validation
   if (
     !facilityName || !startDate || !endDate || !start || !end ||
-    !name || !matricNo || !contact || !clubName ||
+    !name || !matricNo || !contact || !email || !clubName ||
     !projectName || !position || !purpose
   ) {
     showMessage("Please complete all required fields.", "error");
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showMessage("Please enter a valid email address.", "error");
     return;
   }
 
@@ -957,6 +963,7 @@ bookingForm.addEventListener("submit", async (event) => {
     bookerName: name,
     matricNo: matricNo,
     bookerContact: contact,
+    email: email,
     clubName: clubName,
     projectName: projectName,
     position: position,
@@ -1028,7 +1035,8 @@ bookingForm.addEventListener("submit", async (event) => {
       title: "Booking Submitted Successfully!",
       message:
         (result.message || "Your booking has been submitted successfully.") +
-        "\nPlease keep your Booking ID for future reference.",
+        "\nPlease keep your Booking ID for future reference. " +
+        "You will receive an email once your booking is approved.",
       bookingId: result.bookingId || "",
       details: [
         { label: "Facility", value: facilityName },
