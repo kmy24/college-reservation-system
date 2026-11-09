@@ -733,3 +733,93 @@ footer {
     flex-direction: column;
   }
 }
+
+/* ---------- View other days ---------- */
+
+.day-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.day-nav > .secondary-button {
+  flex: 0 0 auto;
+  padding: 0 14px;
+}
+
+.day-nav > .secondary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.day-strip {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(78px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.day-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.3;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.day-chip:hover {
+  border-color: var(--green);
+}
+
+.day-chip.selected {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: white;
+}
+
+.day-chip-weekday {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.day-chip.selected .day-chip-weekday {
+  color: #b6dfc8;
+}
+
+.day-chip-status {
+  margin-top: 2px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.day-chip-status.has-bookings {
+  background: var(--red-light);
+  color: var(--red);
+}
+
+@media (max-width: 760px) {
+  .day-nav {
+    flex-wrap: wrap;
+  }
+
+  .day-strip {
+    order: 3;
+    flex: 1 1 100%;
+  }
+}
