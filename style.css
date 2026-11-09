@@ -1,4 +1,3 @@
-
 :root {
   --navy: #173b35;
   --green: #246b55;
@@ -10,6 +9,7 @@
   --border: #e1e7e1;
   --red: #b83b3b;
   --red-light: #fff0ef;
+  --blue: #2563eb;
 }
 
 * {
@@ -183,6 +183,12 @@ h1 {
   background: #e9f4ed;
 }
 
+.primary-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .secondary-button {
   background: white;
   border: 1px solid var(--border);
@@ -266,17 +272,6 @@ h3 {
   margin-bottom: 0;
   color: var(--muted);
   font-size: 13px;
-}
-
-.demo-label {
-  padding: 7px 11px;
-  border: 1px solid #d9e7dc;
-  border-radius: 7px;
-  background: var(--green-light);
-  color: var(--green);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
 }
 
 .filters {
@@ -367,54 +362,131 @@ input:focus, select:focus {
   background: var(--green);
 }
 
-.schedule {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.dot.selected {
+  background: transparent;
+  border: 2px solid var(--blue);
 }
 
-.schedule-row {
-  display: grid;
-  grid-template-columns: 105px 1fr auto;
-  align-items: center;
-  gap: 15px;
-  padding: 14px;
+/* ---------- Hourly schedule table ---------- */
+
+.table-wrap {
+  max-height: 560px;
+  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 10px;
 }
 
-.schedule-time {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.schedule-details strong {
-  display: block;
-  font-size: 13px;
-}
-
-.schedule-details span {
-  color: var(--muted);
+.schedule-table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 12px;
 }
 
-.status {
-  display: inline-block;
-  padding: 5px 9px;
-  border-radius: 7px;
-  font-size: 10px;
-  font-weight: 800;
+.schedule-table th,
+.schedule-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.schedule-table th:last-child,
+.schedule-table td:last-child {
+  border-right: 0;
+}
+
+.schedule-table tbody tr:last-child th,
+.schedule-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.schedule-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-color: #2d594d;
+}
+
+.schedule-table .time-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 120px;
+  min-width: 110px;
+  background: #f1f5f1;
+  color: var(--text);
+  font-weight: 700;
+  text-align: left;
   white-space: nowrap;
 }
 
-.status.booked {
+.schedule-table thead .time-col {
+  z-index: 4;
+  background: var(--navy);
+  color: white;
+}
+
+.schedule-table td.cell-available {
+  background: var(--green-light);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.schedule-table td.cell-booked {
   background: var(--red-light);
   color: var(--red);
 }
 
-.status.available {
-  background: var(--green-light);
-  color: var(--green);
+.cell-booked .cell-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.cell-booked .cell-line {
+  display: block;
+  margin-top: 2px;
+  color: #8e2828;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.cell-booked .cell-line.small {
+  color: #a55;
+  font-size: 10px;
+}
+
+/* User's selected time from the booking form */
+.schedule-table td.cell-selected {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.schedule-table td.cell-selected.cell-available::after {
+  content: " ✓ yours";
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.schedule-table td.cell-selected.cell-clash {
+  outline-color: #dc2626;
+  background: #fee2e2;
+}
+
+.schedule-table td.cell-selected.cell-clash::before {
+  content: "⚠ CLASH";
+  display: block;
+  color: #b91c1c;
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .notice {
@@ -425,6 +497,23 @@ input:focus, select:focus {
   color: #795c21;
   font-size: 12px;
 }
+
+/* ---------- Rules ---------- */
+
+.rules-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.rules-thanks {
+  margin: 18px 0 0;
+  color: #52645a;
+  font-size: 13px;
+}
+
+/* ---------- Booking ---------- */
 
 .booking-layout {
   display: grid;
@@ -439,8 +528,37 @@ input:focus, select:focus {
   gap: 19px;
 }
 
+.form-grid label {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-grid input,
+.form-grid select {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .full-width {
   grid-column: 1 / -1;
+}
+
+.live-check {
+  margin-top: 18px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.live-check.ok {
+  background: var(--green-light);
+  color: #20563d;
+}
+
+.live-check.clash {
+  background: var(--red-light);
+  color: #8e2828;
 }
 
 .submit-button {
@@ -489,9 +607,31 @@ input:focus, select:focus {
   font-size: 13px;
 }
 
+.help-footer strong {
+  letter-spacing: 0.6px;
+}
+
 .help-footer p {
   margin: 5px 0 0;
   color: #52645a;
+}
+
+.whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.whatsapp-link:hover {
+  text-decoration: underline;
+}
+
+.whatsapp-link[hidden],
+.live-check[hidden] {
+  display: none;
 }
 
 .message {
@@ -562,17 +702,14 @@ footer {
     font-size: 23px;
   }
 
-  .booking-layout {
+  .booking-layout,
+  .rules-layout {
     grid-template-columns: 1fr;
   }
 
-  .schedule-row {
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-  }
-
-  .schedule-time {
-    grid-column: 1 / -1;
+  .schedule-table .time-col {
+    width: 95px;
+    min-width: 95px;
   }
 
   .calendar-card,
