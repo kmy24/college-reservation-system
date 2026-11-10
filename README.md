@@ -59,7 +59,8 @@ All fields are required and labelled in capital letters:
 - New bookings are saved with the status **Pending**.
 - The PIC changes the **STATUS** dropdown in Google Sheets (Pending, Approved, Rejected, Cancelled).
 - When set to **Approved**, an email is sent automatically to the applicant containing the Booking ID, status, facility, date, time, applicant and project details, reminders, and the PIC's contact.
-- Column **EMAIL SENT** records `SENT` with a timestamp (or `FAILED` with the reason). Each booking is emailed once; a failed email can be retried by setting the status to Approved again.
+- When set to **Rejected**, the applicant receives a "Booking Not Approved" email with the booking details, next steps, and the PIC's contact. No email is sent for Cancelled.
+- Column **EMAIL SENT** records `SENT Approved` or `SENT Rejected` with a timestamp (or `FAILED` with the reason). Each status is emailed once; a failed email can be retried by setting the status again.
 
 ### 7. PIC Information (easy to change)
 - The *Before you book* panel shows the PIC in charge. Change the name, phone number, and WhatsApp number in the `PIC_INFO` block at the top of `script.js`.
@@ -190,7 +191,8 @@ Old rows with the status `Confirmed` still block the time slot.
 ## 👩‍💼 PIC / Administrator Guide (quick version)
 
 - **Approve a booking:** set STATUS to **Approved** in the Bookings sheet; the applicant is emailed automatically.
-- **Reject or cancel:** set STATUS to **Rejected** or **Cancelled**; the time becomes free. No email is sent.
+- **Reject:** set STATUS to **Rejected**; the time becomes free and the applicant is emailed.
+- **Cancel:** set STATUS to **Cancelled**; the time becomes free. No email is sent.
 - **Email failed:** column Q shows the reason. Fix it (for example add a missing email in column P), set STATUS to Pending, then back to Approved.
 - **Add or hide a room:** add a row in Facilities, or untick **Active**.
 - **Change the PIC on the website:** edit `PIC_INFO` in `script.js`.
@@ -210,12 +212,13 @@ Old rows with the status `Confirmed` still block the time slot.
 | Leave a field empty / invalid email | Validation message |
 | End date before start date, or end time before start time | Validation message |
 | Set STATUS to Approved | Approval email is sent; column Q shows SENT |
-| Set STATUS to Rejected or Cancelled | The time becomes available again |
+| Set STATUS to Rejected | Rejection email is sent; the time becomes available again |
+| Set STATUS to Cancelled | The time becomes available again; no email |
 | Backend connection fails | Error message is displayed |
 
 ## 🔮 Future Improvements
 
-- Notifications for rejected or cancelled bookings.
+- Notifications for cancelled bookings, and a reason field for rejections.
 - Booking cancellation and modification from the website.
 - WhatsApp notifications.
 - Booking history for individual students.
