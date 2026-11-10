@@ -59,7 +59,7 @@ All fields are required and labelled in capital letters:
 - New bookings are saved with the status **Pending**.
 - The PIC changes the **STATUS** dropdown in Google Sheets (Pending, Approved, Rejected, Cancelled).
 - When set to **Approved**, an email is sent automatically to the applicant containing the Booking ID, status, facility, date, time, applicant and project details, reminders, and the PIC's contact.
-- When set to **Rejected**, the applicant receives a "Booking Not Approved" email with the booking details, next steps, and the PIC's contact. No email is sent for Cancelled.
+- When set to **Rejected**, the applicant receives a "Booking Not Approved" email with the **reason entered in the REMARKS column**, the booking details, next steps, and the PIC's contact. The email waits until a reason is entered. No email is sent for Cancelled.
 - Column **EMAIL SENT** records `SENT Approved` or `SENT Rejected` with a timestamp (or `FAILED` with the reason). Each status is emailed once; a failed email can be retried by setting the status again.
 
 ### 7. PIC Information (easy to change)
@@ -164,6 +164,7 @@ The facilities shown on the website depend on the rows marked **Active**.
 | O | POSITION OF APPLICANT IN THE PROJECT | |
 | P | EMAIL | Approval email recipient |
 | Q | EMAIL SENT | Filled automatically |
+| R | REMARKS | Reason for rejection (required) or a note; included in the email |
 
 Old rows with the status `Confirmed` still block the time slot.
 
@@ -173,7 +174,7 @@ Old rows with the status `Confirmed` still block the time slot.
 
 1. Create the Google Sheet with the **Facilities** and **Bookings** tabs.
 2. Open **Extensions → Apps Script** and paste in `Code.gs`. Save.
-3. Run **`setupBookingsSheet`** once (writes headers A–Q and adds the STATUS dropdown).
+3. Run **`setupBookingsSheet`** once (writes headers A–R and adds the STATUS dropdown).
 4. Run **`authorizeEmail`** once and accept the permissions (sends a test email to you).
 5. Run **`createEditTrigger`** once (installs the trigger that sends approval emails).
 6. **Deploy → New deployment → Web app**, execute as *Me*, access *Anyone*. Copy the web app URL.
@@ -191,7 +192,7 @@ Old rows with the status `Confirmed` still block the time slot.
 ## 👩‍💼 PIC / Administrator Guide (quick version)
 
 - **Approve a booking:** set STATUS to **Approved** in the Bookings sheet; the applicant is emailed automatically.
-- **Reject:** set STATUS to **Rejected**; the time becomes free and the applicant is emailed.
+- **Reject:** type the reason in **REMARKS** (column R) and set STATUS to **Rejected**; the time becomes free and the applicant is emailed with the reason.
 - **Cancel:** set STATUS to **Cancelled**; the time becomes free. No email is sent.
 - **Email failed:** column Q shows the reason. Fix it (for example add a missing email in column P), set STATUS to Pending, then back to Approved.
 - **Add or hide a room:** add a row in Facilities, or untick **Active**.
@@ -212,13 +213,14 @@ Old rows with the status `Confirmed` still block the time slot.
 | Leave a field empty / invalid email | Validation message |
 | End date before start date, or end time before start time | Validation message |
 | Set STATUS to Approved | Approval email is sent; column Q shows SENT |
-| Set STATUS to Rejected | Rejection email is sent; the time becomes available again |
+| Set STATUS to Rejected with a reason in REMARKS | Rejection email with the reason is sent; the time becomes available again |
+| Set STATUS to Rejected with REMARKS empty | EMAIL SENT shows WAITING; the email is sent once the reason is typed |
 | Set STATUS to Cancelled | The time becomes available again; no email |
 | Backend connection fails | Error message is displayed |
 
 ## 🔮 Future Improvements
 
-- Notifications for cancelled bookings, and a reason field for rejections.
+- Notifications for cancelled bookings, and WhatsApp alerts.
 - Booking cancellation and modification from the website.
 - WhatsApp notifications.
 - Booking history for individual students.
